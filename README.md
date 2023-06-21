@@ -14,7 +14,7 @@ __JP8__ (Diode Bypass) – allows the reverse supply protection schottky diode t
 __JP9__ (Permanent Peripheral VCC) – See below.
 
 ## Runtime Switches
-__S1__ (Flash/Cmd) –  Reset will trigger the boot loader if this switch is held on (i.e. flashing is done by holding S1 and then pressing/releasing S2). Once the new programme has been flashed, S2 (reset) must be done manually. After boot, this may be used as an ad hoc “command” (if DTR is not connected). This is active low.
+__S1__ (Flash/Cmd) –  Reset will trigger the boot loader if this switch is held on (i.e. flashing is done by holding S1 and then pressing/releasing S2). Once the new programme has been flashed, S2 (reset) must be done manually. After boot, this may be used as an ad hoc “command” (if DTR is not connected). This is active low.  
 __S2__ (Reset) – ESP-12 reset.
 
 ## Headers
