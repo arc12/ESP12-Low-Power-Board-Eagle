@@ -1,1 +1,60 @@
-# ESP12-Low-Power-Board-Eagle
+# ESP12 Low Power Board
+Repo for a PCB based around the ESP12 module intended to support low power use with deep sleep and 18650 cell. It is designed to allow multiple options, outlined below.
+
+## Configuration
+Solder jumpers are intended for settings which are constant for a given application of the board, e.g. an X sensor attached. Normal jumpers are for settings which might vary between locations or at different times (including setup and testing).
+
+__SJ1__ (Deep Sleep) – Option A routes GPIO16 to the breakout for normal IO use; option B connects it to the reset pin for use of Deep Sleep.  
+__SJ2,3__ – These jumpers are NC and may be cut if the serial adapter does not have both DTR and RTS signals on the relevant pins. If these signals are present, then flashing (and terminal reset) will be automatic. Otherwise S1 and S2 must be used. Note that if DTR is connected (and the Serial adapter is powered via either the battery connection or USB) then the “Cmd” (aka Flash) button cannot be used as an input. RTS may be connected and DTR left unconnected; in this case S1 must be used when boot-loading firmware, with only the reset function being automatic (pressing S2 not needed).  
+__JP1-3__ (Cfg0/1/2) – May be used to select runtime configurations, for example to put the software into a testing or calibration loop. Omit these if the GPIOs will be used at the Breakout header. GPIO14 can either be programmed as Cfg2 or used for peripheral power control (p-Vcc, see below): pin pair “A” is for Cfg2 and “B” is for enabling the p-Vcc control.  
+__JP4,5__ (Signal) – If shorted, LEDs are connected to GPIO2 or GPIO0, respectively. This is intended for testing. May be omitted, along with the LEDs and resistors. GPIO2 shows activity during flashing and boot.  
+__JP6__ (USB Power) – If shorted, allows for the USB-Serial breakout to power the device. NB: must be 3.3V regulated. In this case, the battery should be disconnected (although this is probably not critical). Normally open (or no header).  
+__JP7__ (LDO Enable) – allows the LDO enable to be controlled off-board. Replace with a wire for "always on".  
+__JP8__ (Diode Bypass) – allows the reverse supply protection schottky diode to be bypassed. Normally leave unpopulated.  
+__JP9__ (Permanent Peripheral VCC) – See below.
+
+## Runtime Switches
+__S1__ (Flash/Cmd) –  Reset will trigger the boot loader if this switch is held on (i.e. flashing is done by holding S1 and then pressing/releasing S2). Once the new programme has been flashed, S2 (reset) must be done manually. After boot, this may be used as an ad hoc “command” (if DTR is not connected). This is active low.
+__S2__ (Reset) – ESP-12 reset.
+
+## Headers
+### Serial
+UART pins and power, intended for flashing the device and diagnostic monitoring, although some applications might use them. Note that the pin labels are to match those on the serial device, rather than being those of the ESP8622.  See note on JP6. 3.3V logic must be used.
+
+Note that, if the DTR and RTS signals are connected, then the PlatformIO monitor (or any other serial interaction which is not bootloading) must be configured as follows (add to platformio.ini), otherwise attempts to use the Monitor cause the board to hang (recovers if the monitor is killed):
+```
+monitor_rts = 0
+monitor_dtr = 0
+```
+
+### Breakout
+ESP-12 I/O and power for attached devices. The higher pin numbers may also be used for on board functions, in which case a shorter set of header pins can be used.
+
+Some notes:
+- GPIO 4 and 5 may be used without consideration, and are conventionally used for I2C.
+- A0 may be used only if battery monitoring is NOT being used.
+- GPIO 12 and 13 may be used at the breakout or one/both may be used for configuration setting.
+- GPIO 14 may be used for onboard signalling for testing via JP4, for control of power to "peripherals" (see below), or used for I/O at the breakout header.
+- GPIO 16 is used for sleep control in Deep Sleep (active low, drives RST). Avoid using at the breakout if deep sleep is used (this GPIO has other limitations too: see datasheet).
+- RST can be used to wake the ESP8266 from a deep sleep.
+
+### I2C
+Convenience headers, ordered to match the SHT4X, BH1750, ... breakout boards. Note that one has the power pins reversed.
+
+## Omittable Components
+- R3/C3 are probably already on the ESP-12 module.
+- R1,4 are probably already on the ESP-12 module.
+- LEDs and related resistors and jumpers.
+- JP1-3 and headers.
+- R10,11 should be omitted if I2C communications is not occurring on GPIO4,5. A value of 4k7 is shown but values between 10k and 2.2k are normal. Some breakout boards already include 10k pull-up resistors, which may be satisfactory; if so, omit R10,11, especially if there is more than one I2C breakout with pull-ups present.
+- Q1, R12, JP3 (partial) – see next section.
+
+## Peripheral/sensor Power Rail Control Option
+This option allows the ESP8266 to disconnect power to the peripherals on SV2-5. NB: SV1 is not affected since power may be supplied TO the board via that header.
+
+If this is not required then JP9 should be a soldered wire and Q1, R12, and JP10 should be omitted. i.e. Vcc to peripherals will be “permanent”. If it is required then a normal operating condition will have JP9 open and JP3 set to connect GPIO14 to Q1. In this case, Cfg2 cannot be used. The MCU will need to restore power by pulling GPIO14 low before attempting communications. JP9 maybe closed to override the control to “always on”.
+
+JP3 may be soldered as a 2 pin or 3 pin configuration according to need, for example to allow for the situation when R12 and Q1 are in place but no longer used; i.e. it allows GPIO14 to be used without R12 acting as a pull-up. In this case, JP9 would be closed.
+
+## Future Variant Ideas
+To allow for 5V devices (even if 3.3V logic): a double LiPo battery with both 5V and 3.3V step-down and mosfet power rail control.
