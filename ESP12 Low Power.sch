@@ -6645,15 +6645,14 @@ Basic 0.1" spaced jumper. Use with breakaway headers.</description>
 <sheets>
 <sheet>
 <plain>
-<text x="-165.1" y="48.26" size="1.27" layer="97" rot="R90">R3, C3 may be redundant (inside ESP-12 module).
-Given here in case some modules do not have them.</text>
+<text x="-165.1" y="48.26" size="1.27" layer="97" rot="R90">R3, C3 are believed to NOT be inside ESP-12.</text>
 <text x="-10.16" y="55.88" size="1.27" layer="97">R9, LED1:
 As on NodeMCU &amp; ESP12
 (without jumper!)</text>
 <text x="83.82" y="99.06" size="1.27" layer="97" rot="R90">A0 must not be used
 if the code is checking
 Vcc.</text>
-<text x="-99.06" y="45.72" size="1.27" layer="97">ESP12 breakbout board has
+<text x="-99.06" y="45.72" size="1.27" layer="97">ESP12 breakout board has
 CH_PD to Vcc via 10k
 GPIO15 to GND via 10k</text>
 <text x="83.82" y="73.66" size="1.27" layer="97" rot="R90">GPIO4 = SDA
@@ -6677,10 +6676,6 @@ be disconnected.</text>
 be altered according
 to LED V drop and
 current.</text>
-<text x="-53.34" y="91.44" size="1.27" layer="97" rot="R180">R1, R4 may be redundant
-(inside ESP-12 module).
-Given here in case some
-modules do not have them.</text>
 <text x="-60.96" y="10.16" size="1.778" layer="97">GPIO14 low
 to enable
 peripheral power</text>
@@ -6688,6 +6683,9 @@ peripheral power</text>
 PSU as ALTERNATIVE</text>
 <text x="78.74" y="40.64" size="1.27" layer="97" rot="R270">NB: different
 power pins</text>
+<text x="-86.36" y="15.24" size="1.778" layer="97">NB: A and B are
+transposed here!
+Correct on board silk.</text>
 </plain>
 <instances>
 <instance part="SJR1" gate="G$1" x="-58.42" y="66.04" smashed="yes">

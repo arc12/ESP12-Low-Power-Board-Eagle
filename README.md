@@ -42,19 +42,33 @@ Some notes:
 Convenience headers, ordered to match the SHT4X, BH1750, ... breakout boards. Note that one has the power pins reversed.
 
 ## Omittable Components
-- R3/C3 are probably already on the ESP-12 module.
-- R1,4 are probably already on the ESP-12 module.
 - LEDs and related resistors and jumpers.
 - JP1-3 and headers.
 - R10,11 should be omitted if I2C communications is not occurring on GPIO4,5. A value of 4k7 is shown but values between 10k and 2.2k are normal. Some breakout boards already include 10k pull-up resistors, which may be satisfactory; if so, omit R10,11, especially if there is more than one I2C breakout with pull-ups present.
 - Q1, R12, JP3 (partial) – see next section.
 
+The ESP-12 modules have a LED on GPIO2, which may be unwanted!
+
 ## Peripheral/sensor Power Rail Control Option
+__AKA p-Vcc__
 This option allows the ESP8266 to disconnect power to the peripherals on SV2-5. NB: SV1 is not affected since power may be supplied TO the board via that header.
 
-If this is not required then JP9 should be a soldered wire and Q1, R12, and JP10 should be omitted. i.e. Vcc to peripherals will be “permanent”. If it is required then a normal operating condition will have JP9 open and JP3 set to connect GPIO14 to Q1. In this case, Cfg2 cannot be used. The MCU will need to restore power by pulling GPIO14 low before attempting communications. JP9 maybe closed to override the control to “always on”.
+If p-Vcc is not required then JP9 should be a soldered wire and Q1 + R12 should be omitted (and JP3 reduced to 2 pins). i.e. Vcc to peripherals will be “permanent”. If p-Vcc is required then a normal operating condition will have JP9 open and JP3 set to connect GPIO14 to Q1 (option B on PCB silk). In this case, Cfg2 cannot be used. The MCU will need to restore power by pulling GPIO14 low before attempting communications. JP9 maybe closed to override the control to “always on”.
 
 JP3 may be soldered as a 2 pin or 3 pin configuration according to need, for example to allow for the situation when R12 and Q1 are in place but no longer used; i.e. it allows GPIO14 to be used without R12 acting as a pull-up. In this case, JP9 would be closed.
 
 ## Future Variant Ideas
 To allow for 5V devices (even if 3.3V logic): a double LiPo battery with both 5V and 3.3V step-down and mosfet power rail control.
+
+## Device Construction Notes
+_To match software, elsewhere in a currently-private repo._
+### TH
+Options:
+- Remove LED from ESP-12
+- Battery and LDO circuit as normal, hard-wire JP7, omit JP8 and the PSU connector.
+- Omit p-Vcc components; JP9 as permanent wire.
+- LED2 as amber, 180R resistor, with jumper.
+- Cfg0 and Cfg1 jumpers (neither connected for normal use.
+- SJ3 to deep sleep.
+- Include serial header and external power jumper, but no others; solder SHT40 direct to one I2C header slot.
+- Reset switch but not "flash/cmd"
