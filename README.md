@@ -4,22 +4,22 @@ Repo for a PCB based around the ESP12 module intended to support low power use w
 ## Configuration
 Solder jumpers are intended for settings which are constant for a given application of the board, e.g. an X sensor attached. Normal jumpers are for settings which might vary between locations or at different times (including setup and testing).
 
-__SJ1__ (Deep Sleep) – Option A routes GPIO16 to the breakout for normal IO use; option B connects it to the reset pin for use of Deep Sleep.  
-__SJ2,3__ – These jumpers are NC and may be cut if the serial adapter does not have both DTR and RTS signals on the relevant pins. If these signals are present, then flashing (and terminal reset) will be automatic. Otherwise S1 and S2 must be used. Note that if DTR is connected (and the Serial adapter is powered via either the battery connection or USB) then the “Cmd” (aka Flash) button cannot be used as an input. RTS may be connected and DTR left unconnected; in this case S1 must be used when boot-loading firmware, with only the reset function being automatic (pressing S2 not needed).  
-__JP1-3__ (Cfg0/1/2) – May be used to select runtime configurations, for example to put the software into a testing or calibration loop. Omit these if the GPIOs will be used at the Breakout header. GPIO14 can either be programmed as Cfg2 or used for peripheral power control (p-Vcc, see below): pin pair “A” is for Cfg2 and “B” is for enabling the p-Vcc control.  
-__JP4,5__ (Signal) – If shorted, LEDs are connected to GPIO2 or GPIO0, respectively. This is intended for testing. May be omitted, along with the LEDs and resistors. GPIO2 shows activity during flashing and boot.  
-__JP6__ (USB Power) – If shorted, allows for the USB-Serial breakout to power the device. NB: must be 3.3V regulated. In this case, the battery should be disconnected (although this is probably not critical). Normally open (or no header).  
-__JP7__ (LDO Enable) – allows the LDO enable to be controlled off-board. Replace with a wire for "always on".  
-__JP8__ (Diode Bypass) – allows the reverse supply protection schottky diode to be bypassed. Normally leave unpopulated.  
-__JP9__ (Permanent Peripheral VCC) – See below.
+__SJ1__ (Deep Sleep) - Option A routes GPIO16 to the breakout for normal IO use; option B connects it to the reset pin for use of Deep Sleep.  
+__SJ2,3__ - These jumpers are NC and may be cut if the serial adapter does not have both DTR and RTS signals on the relevant pins. If these signals are present, then flashing (and terminal reset) will be automatic. Otherwise S1 and S2 must be used. Note that if DTR is connected (and the Serial adapter is powered via either the battery connection or USB) then the “Cmd” (aka Flash) button cannot be used as an input. RTS may be connected and DTR left unconnected; in this case S1 must be used when boot-loading firmware, with only the reset function being automatic (pressing S2 not needed).  
+__JP1-3__ (Cfg0/1/2) - May be used to select runtime configurations, for example to put the software into a testing or calibration loop. Omit these if the GPIOs will be used at the Breakout header. GPIO14 can either be programmed as Cfg2 or used for peripheral power control (p-Vcc, see below): pin pair “A” is for Cfg2 and “B” is for enabling the p-Vcc control.  
+__JP4,5__ (Signal) - If shorted, LEDs 1 and 2 are connected to GPIO2 or GPIO0, respectively. This is intended for testing. May be omitted, along with the LEDs and resistors. GPIO2 shows activity during flashing and boot.  
+__JP6__ (USB Power) - If shorted, allows for the USB-Serial breakout to power the device. NB: must be 3.3V regulated. In this case, the battery should be disconnected (although this is probably not critical). Normally open (or no header).  
+__JP7__ (LDO Enable) - allows the LDO enable to be controlled off-board. Replace with a wire for "always on".  
+__JP8__ (Diode Bypass) - allows the reverse supply protection schottky diode to be bypassed. Normally leave unpopulated.  
+__JP9__ (Permanent Peripheral VCC) - See below.
 
 ## Runtime Switches
-__S1__ (Flash/Cmd) –  Reset will trigger the boot loader if this switch is held on (i.e. flashing is done by holding S1 and then pressing/releasing S2). Once the new programme has been flashed, S2 (reset) must be done manually. After boot, this may be used as an ad hoc “command” (if DTR is not connected). This is active low.  
-__S2__ (Reset) – ESP-12 reset.
+__S1__ (Flash/Cmd) -  Reset will trigger the boot loader if this switch is held on (i.e. flashing is done by holding S1 and then pressing/releasing S2). Once the new programme has been flashed, S2 (reset) must be done manually. After boot, this may be used as an ad hoc “command” (if DTR is not connected). This is active low.  
+__S2__ (Reset) - ESP-12 reset.
 
 ## Headers
 ### Serial
-UART pins and power, intended for flashing the device and diagnostic monitoring, although some applications might use them. Note that the pin labels are to match those on the serial device, rather than being those of the ESP8622.  See note on JP6. 3.3V logic must be used.
+UART pins and power, intended for flashing the device and diagnostic monitoring, although some applications might use them. When using a Bluetooth serial monitor, JP6 should be on, to supply it with power. Note that the pin labels are to match those on the serial device, rather than being those of the ESP8622.  See note on JP6. 3.3V logic must be used.
 
 Note that, if the DTR and RTS signals are connected, then the PlatformIO monitor (or any other serial interaction which is not bootloading) must be configured as follows (add to platformio.ini), otherwise attempts to use the Monitor cause the board to hang (recovers if the monitor is killed):
 ```
@@ -45,7 +45,7 @@ Convenience headers, ordered to match the SHT4X, BH1750, ... breakout boards. No
 - LEDs and related resistors and jumpers.
 - JP1-3 and headers.
 - R10,11 should be omitted if I2C communications is not occurring on GPIO4,5. A value of 4k7 is shown but values between 10k and 2.2k are normal. Some breakout boards already include 10k pull-up resistors, which may be satisfactory; if so, omit R10,11, especially if there is more than one I2C breakout with pull-ups present.
-- Q1, R12, JP3 (partial) – see next section.
+- Q1, R12, JP3 (partial) - see next section.
 
 The ESP-12 modules have a LED on GPIO2, which may be unwanted!
 
@@ -67,8 +67,8 @@ Options:
 - Remove LED from ESP-12
 - Battery and LDO circuit as normal, hard-wire JP7, omit JP8 and the PSU connector.
 - Omit p-Vcc components; JP9 as permanent wire.
-- LED2 as amber, 180R resistor, with jumper.
+- LED2 as amber, 180R resistor, with jumper. (omit LED1 and R9)
 - Cfg0 and Cfg1 jumpers (neither connected for normal use.
 - SJ3 to deep sleep.
 - Include serial header and external power jumper, but no others; solder SHT40 direct to one I2C header slot.
-- Reset switch but not "flash/cmd"
+- Reset switch but not "flash/cmd" (omit R7).
